@@ -93,12 +93,44 @@
     update();
   }
 
-  /* ---- 6. 视频懒启播 ---- */
+  /* ---- 6. 视频懒启播（含 HLS 支持） ---- */
   const video = document.querySelector('.hero-video');
   if (video) {
     const tryPlay = () => video.play().catch(() => {});
-    if (document.readyState === 'complete') tryPlay();
-    else addEventListener('load', tryPlay, { once: true });
+    const startWhenReady = () => {
+      if (document.readyState === 'complete') tryPlay();
+      else addEventListener('load', tryPlay, { once: true });
+    };
+
+    const hlsUrl = video.dataset.hls;
+    const mp4Src = video.querySelector('source')?.src;
+
+    if (hlsUrl) {
+      // Safari / iOS / 部分 Edge 原生支持 HLS
+      if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = hlsUrl;
+        startWhenReady();
+      } else {
+        // 其他浏览器：懒加载 hls.js
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js';
+        s.async = true;
+        s.onload = () => {
+          if (window.Hls && window.Hls.isSupported()) {
+            const hls = new window.Hls({ enableWorker: true, lowLatencyMode: false });
+            hls.loadSource(hlsUrl);
+            hls.attachMedia(video);
+            hls.on(window.Hls.Events.MANIFEST_PARSED, startWhenReady);
+            hls.on(window.Hls.Events.ERROR, (_, data) => {
+              if (data.fatal) hls.destroy(); // 失败时回落到 poster
+            });
+          }
+        };
+        document.head.appendChild(s);
+      }
+    } else if (mp4Src) {
+      startWhenReady();
+    }
   }
 
   /* ---- 7. 锚链微滚动校正 ---- */

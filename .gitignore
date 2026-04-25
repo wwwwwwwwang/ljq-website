@@ -1,0 +1,50 @@
+# —— 系统 / 编辑器 ——
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+.vscode/
+.idea/
+.cursor/
+.claude/
+*.swp
+*.swo
+*~
+
+# —— 日志 / 临时 ——
+*.log
+*.tmp
+*.bak
+*.old
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# —— 环境变量 / 私密 ——
+.env
+.env.*
+!.env.example
+
+# —— 依赖（即便目前没用到，未来加构建工具也兼容） ——
+node_modules/
+.pnpm-store/
+
+# —— 构建产物 ——
+dist/
+build/
+.cache/
+.parcel-cache/
+
+# —— 视频原片（避免把 GB 级别原始素材推上去） ——
+# 部署用的成片放在 assets/videos/，原始/未压缩素材建议放在下面这个目录里
+assets/videos/raw/
+assets/videos/*.mov
+assets/videos/*.MOV
+assets/videos/*-master.mp4
+assets/videos/*-original.mp4
+
+# —— Git / 系统自带 ——
+*.orig
+.history/
